@@ -9,7 +9,6 @@
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* スマホのキーボード表示等による崩れを防ぐ高さ設定 */
     body {
       height: 100dvh;
       touch-action: manipulation;
@@ -34,28 +33,28 @@
     </div>
   </div>
 
-  <!-- ステータスカード -->
+  <!-- ステータスカード（少しフォントサイズを拡大） -->
   <div class="grid grid-cols-4 gap-2 my-2">
-    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
+    <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">体重</div>
-      <div id="latestWeight" class="text-sm font-bold text-emerald-400 mt-0.5">-- <span class="text-[9px] text-slate-400 font-normal">kg</span></div>
+      <div id="latestWeight" class="text-base font-bold text-emerald-400 mt-0.5">-- <span class="text-[10px] text-slate-400 font-normal">kg</span></div>
     </div>
-    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
+    <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">体脂肪率</div>
-      <div id="latestFat" class="text-sm font-bold text-cyan-400 mt-0.5">-- <span class="text-[9px] text-slate-400 font-normal">%</span></div>
+      <div id="latestFat" class="text-base font-bold text-cyan-400 mt-0.5">-- <span class="text-[10px] text-slate-400 font-normal">%</span></div>
     </div>
-    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
+    <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">除脂肪体重</div>
-      <div id="latestLBM" class="text-sm font-bold text-slate-200 mt-0.5">-- <span class="text-[9px] text-slate-400 font-normal">kg</span></div>
+      <div id="latestLBM" class="text-base font-bold text-slate-200 mt-0.5">-- <span class="text-[10px] text-slate-400 font-normal">kg</span></div>
     </div>
-    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
+    <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">FFMI</div>
-      <div id="latestFFMI" class="text-sm font-bold text-amber-400 mt-0.5">--</div>
+      <div id="latestFFMI" class="text-base font-bold text-amber-400 mt-0.5">--</div>
     </div>
   </div>
 
-  <!-- グラフ領域 -->
-  <div class="flex-1 bg-slate-800/50 p-2 rounded-xl border border-slate-700/50 flex flex-col min-h-0 my-1">
+  <!-- グラフ領域（高さをコンパクトに調整） -->
+  <div class="bg-slate-800/50 p-2 rounded-xl border border-slate-700/50 flex flex-col my-1" style="height: 140px;">
     <div class="flex justify-between items-center mb-1">
       <span class="text-[11px] font-medium text-slate-400">推移グラフ</span>
       <div class="flex gap-1 text-[10px]">
@@ -70,23 +69,23 @@
     </div>
   </div>
 
-  <!-- 入力フォーム＆アクション -->
+  <!-- 入力フォーム＆アクション（操作しやすくゆったり配置） -->
   <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 mt-1">
     <form id="logForm" class="flex gap-2 items-center mb-2">
       <div class="flex-1">
         <label class="text-[10px] text-slate-400 block mb-0.5">日付</label>
-        <input type="date" id="dateInput" required class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 text-center focus:outline-none focus:border-emerald-500">
+        <input type="date" id="dateInput" required class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-2 text-center focus:outline-none focus:border-emerald-500">
       </div>
       <div class="flex-1">
         <label class="text-[10px] text-slate-400 block mb-0.5">体重 (kg)</label>
-        <input type="number" id="weightInput" step="0.1" min="20" max="200" required placeholder="65.0" class="w-full bg-slate-900 border border-slate-700 text-emerald-400 font-bold text-xs rounded px-2 py-1.5 text-center focus:outline-none focus:border-emerald-500">
+        <input type="number" id="weightInput" step="0.1" min="20" max="200" required placeholder="65.0" class="w-full bg-slate-900 border border-slate-700 text-emerald-400 font-bold text-xs rounded px-2 py-2 text-center focus:outline-none focus:border-emerald-500">
       </div>
       <div class="flex-1">
         <label class="text-[10px] text-slate-400 block mb-0.5">体脂肪率 (%)</label>
-        <input type="number" id="fatInput" step="0.1" min="3" max="60" required placeholder="15.0" class="w-full bg-slate-900 border border-slate-700 text-cyan-400 font-bold text-xs rounded px-2 py-1.5 text-center focus:outline-none focus:border-cyan-500">
+        <input type="number" id="fatInput" step="0.1" min="3" max="60" required placeholder="15.0" class="w-full bg-slate-900 border border-slate-700 text-cyan-400 font-bold text-xs rounded px-2 py-2 text-center focus:outline-none focus:border-cyan-500">
       </div>
       <div class="flex-none pt-4">
-        <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-3 py-1.5 rounded transition shadow-lg shadow-emerald-500/20">記録</button>
+        <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-4 py-2 rounded transition shadow-lg shadow-emerald-500/20">記録</button>
       </div>
     </form>
 
@@ -99,13 +98,11 @@
   </div>
 
   <script>
-    // State & Storage Initialization
     let logs = JSON.parse(localStorage.getItem('body_logs') || '[]');
     let height = parseFloat(localStorage.getItem('user_height') || '170');
     let chartFilter = 'all';
     let chartInstance = null;
 
-    // Elements
     const heightInput = document.getElementById('heightInput');
     const dateInput = document.getElementById('dateInput');
     const weightInput = document.getElementById('weightInput');
@@ -114,13 +111,9 @@
     const exportCsvBtn = document.getElementById('exportCsvBtn');
     const clearBtn = document.getElementById('clearBtn');
 
-    // Default Date to Today
     dateInput.value = new Date().toISOString().split('T')[0];
     heightInput.value = height;
 
-    // FFMI Calculation Formula
-    // FFMI = LBM(kg) / (Height(m)^2)
-    // Normalized FFMI = FFMI + 6.1 * (1.8 - Height(m))
     function calculateMetrics(w, f, h) {
       const lbm = w * (1 - f / 100);
       const heightM = h / 100;
@@ -140,7 +133,6 @@
       return 'アスリート/極高';
     }
 
-    // Height Update Event
     heightInput.addEventListener('change', (e) => {
       const val = parseFloat(e.target.value);
       if (val > 50 && val < 250) {
@@ -159,7 +151,6 @@
       localStorage.setItem('body_logs', JSON.stringify(logs));
     }
 
-    // Form Submit Event
     logForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const date = dateInput.value;
@@ -179,19 +170,15 @@
         logs.push(newEntry);
       }
 
-      // Sort by date ascending
       logs.sort((a, b) => new Date(a.date) - new Date(b.date));
-
       localStorage.setItem('body_logs', JSON.stringify(logs));
       
-      // Clear Inputs
       weightInput.value = '';
       fatInput.value = '';
 
       updateUI();
     });
 
-    // Reset Data Event
     clearBtn.addEventListener('click', () => {
       if (confirm('すべての記録データを消去しますか？')) {
         logs = [];
@@ -200,7 +187,6 @@
       }
     });
 
-    // Filter Buttons Update
     window.setChartFilter = function(filter) {
       chartFilter = filter;
       ['all', 'weight', 'fat', 'ffmi'].forEach(f => {
@@ -214,57 +200,55 @@
       renderChart();
     };
 
-    // Update Top Display & Stats
     function updateUI() {
       if (logs.length > 0) {
         const latest = logs[logs.length - 1];
-        document.getElementById('latestWeight').innerHTML = `${latest.weight} <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
-        document.getElementById('latestFat').innerHTML = `${latest.fat} <span class="text-[9px] text-slate-400 font-normal">%</span>`;
-        document.getElementById('latestLBM').innerHTML = `${latest.lbm} <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestWeight').innerHTML = `${latest.weight} <span class="text-[10px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestFat').innerHTML = `${latest.fat} <span class="text-[10px] text-slate-400 font-normal">%</span>`;
+        document.getElementById('latestLBM').innerHTML = `${latest.lbm} <span class="text-[10px] text-slate-400 font-normal">kg</span>`;
         document.getElementById('latestFFMI').innerText = latest.ffmi;
 
         const badge = document.getElementById('ffmiBadge');
         badge.innerText = getFFMILabel(latest.ffmi);
       } else {
-        document.getElementById('latestWeight').innerHTML = `-- <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
-        document.getElementById('latestFat').innerHTML = `-- <span class="text-[9px] text-slate-400 font-normal">%</span>`;
-        document.getElementById('latestLBM').innerHTML = `-- <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestWeight').innerHTML = `-- <span class="text-[10px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestFat').innerHTML = `-- <span class="text-[10px] text-slate-400 font-normal">%</span>`;
+        document.getElementById('latestLBM').innerHTML = `-- <span class="text-[10px] text-slate-400 font-normal">kg</span>`;
         document.getElementById('latestFFMI').innerText = '--';
         document.getElementById('ffmiBadge').innerText = '--';
       }
       renderChart();
     }
 
-    // Chart Renderer
     function renderChart() {
       const ctx = document.getElementById('bodyChart').getContext('2d');
       if (chartInstance) chartInstance.destroy();
 
-      const labels = logs.map(l => l.date.slice(5)); // MM-DD
+      const labels = logs.map(l => l.date.slice(5));
       const datasets = [];
 
       if (chartFilter === 'all' || chartFilter === 'weight') {
         datasets.push({
-          label: '体重 (kg)',
+          label: '体重',
           data: logs.map(l => l.weight),
           borderColor: '#10b981',
           backgroundColor: '#10b98120',
           yAxisID: 'yWeight',
           borderWidth: 2,
-          pointRadius: 3,
+          pointRadius: 2,
           tension: 0.2
         });
       }
 
       if (chartFilter === 'all' || chartFilter === 'fat') {
         datasets.push({
-          label: '体脂肪率 (%)',
+          label: '体脂肪',
           data: logs.map(l => l.fat),
           borderColor: '#06b6d4',
           backgroundColor: '#06b6d420',
           yAxisID: 'yFat',
           borderWidth: 2,
-          pointRadius: 3,
+          pointRadius: 2,
           tension: 0.2
         });
       }
@@ -277,14 +261,14 @@
           backgroundColor: '#f59e0b20',
           yAxisID: 'yFFMI',
           borderWidth: 2,
-          pointRadius: 3,
+          pointRadius: 2,
           tension: 0.2
         });
       }
 
       const scales = {
         x: {
-          ticks: { color: '#94a3b8', font: { size: 9 } },
+          ticks: { color: '#94a3b8', font: { size: 9 }, maxTicksLimit: 6 },
           grid: { color: '#33415540' }
         }
       };
@@ -324,7 +308,7 @@
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 12 }
+              labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 10 }
             }
           },
           scales: scales
@@ -332,7 +316,6 @@
       });
     }
 
-    // Export CSV (BOM付き UTF-8 でExcelの文字化け防止)
     exportCsvBtn.addEventListener('click', () => {
       if (logs.length === 0) {
         alert('出力できるデータがありません');
@@ -355,7 +338,6 @@
       URL.revokeObjectURL(url);
     });
 
-    // 初期化ロード
     updateUI();
   </script>
 </body>
