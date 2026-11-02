@@ -33,28 +33,28 @@
     </div>
   </div>
 
-  <!-- ステータスカード（少しフォントサイズを拡大） -->
+  <!-- ステータスカード -->
   <div class="grid grid-cols-4 gap-2 my-2">
-    <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/60 text-center">
+    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">体重</div>
       <div id="latestWeight" class="text-base font-bold text-emerald-400 mt-0.5">-- <span class="text-[10px] text-slate-400 font-normal">kg</span></div>
     </div>
-    <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/60 text-center">
+    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">体脂肪率</div>
       <div id="latestFat" class="text-base font-bold text-cyan-400 mt-0.5">-- <span class="text-[10px] text-slate-400 font-normal">%</span></div>
     </div>
-    <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/60 text-center">
+    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">除脂肪体重</div>
       <div id="latestLBM" class="text-base font-bold text-slate-200 mt-0.5">-- <span class="text-[10px] text-slate-400 font-normal">kg</span></div>
     </div>
-    <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700/60 text-center">
+    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">FFMI</div>
       <div id="latestFFMI" class="text-base font-bold text-amber-400 mt-0.5">--</div>
     </div>
   </div>
 
-  <!-- グラフ領域（高さをコンパクトに調整） -->
-  <div class="bg-slate-800/50 p-2 rounded-xl border border-slate-700/50 flex flex-col my-1" style="height: 140px;">
+  <!-- グラフ領域（高さを1.5倍の210pxに拡大） -->
+  <div class="bg-slate-800/50 p-2 rounded-xl border border-slate-700/50 flex flex-col my-1" style="height: 210px;">
     <div class="flex justify-between items-center mb-1">
       <span class="text-[11px] font-medium text-slate-400">推移グラフ</span>
       <div class="flex gap-1 text-[10px]">
@@ -69,27 +69,27 @@
     </div>
   </div>
 
-  <!-- 入力フォーム＆アクション（操作しやすくゆったり配置） -->
-  <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 mt-1">
+  <!-- 入力フォーム＆アクション -->
+  <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 mt-1">
     <form id="logForm" class="flex gap-2 items-center mb-2">
       <div class="flex-1">
         <label class="text-[10px] text-slate-400 block mb-0.5">日付</label>
-        <input type="date" id="dateInput" required class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-2 text-center focus:outline-none focus:border-emerald-500">
+        <input type="date" id="dateInput" required class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 text-center focus:outline-none focus:border-emerald-500">
       </div>
       <div class="flex-1">
         <label class="text-[10px] text-slate-400 block mb-0.5">体重 (kg)</label>
-        <input type="number" id="weightInput" step="0.1" min="20" max="200" required placeholder="65.0" class="w-full bg-slate-900 border border-slate-700 text-emerald-400 font-bold text-xs rounded px-2 py-2 text-center focus:outline-none focus:border-emerald-500">
+        <input type="number" id="weightInput" step="0.1" min="20" max="200" required placeholder="65.0" class="w-full bg-slate-900 border border-slate-700 text-emerald-400 font-bold text-xs rounded px-2 py-1.5 text-center focus:outline-none focus:border-emerald-500">
       </div>
       <div class="flex-1">
         <label class="text-[10px] text-slate-400 block mb-0.5">体脂肪率 (%)</label>
-        <input type="number" id="fatInput" step="0.1" min="3" max="60" required placeholder="15.0" class="w-full bg-slate-900 border border-slate-700 text-cyan-400 font-bold text-xs rounded px-2 py-2 text-center focus:outline-none focus:border-cyan-500">
+        <input type="number" id="fatInput" step="0.1" min="3" max="60" required placeholder="15.0" class="w-full bg-slate-900 border border-slate-700 text-cyan-400 font-bold text-xs rounded px-2 py-1.5 text-center focus:outline-none focus:border-cyan-500">
       </div>
       <div class="flex-none pt-4">
-        <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-4 py-2 rounded transition shadow-lg shadow-emerald-500/20">記録</button>
+        <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded transition shadow-lg shadow-emerald-500/20">記録</button>
       </div>
     </form>
 
-    <div class="flex justify-between items-center pt-2 border-t border-slate-700/60 text-[10px]">
+    <div class="flex justify-between items-center pt-1.5 border-t border-slate-700/60 text-[10px]">
       <span class="text-slate-500">※自動計算: FFMI / 除脂肪体重</span>
       <button id="exportCsvBtn" class="flex items-center gap-1 bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded transition">
         <span>CSV出力</span>
