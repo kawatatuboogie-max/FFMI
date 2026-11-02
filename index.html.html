@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>体重・FFMI管理</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* スマホのキーボード表示等による崩れを防ぐ高さ設定 */
+    body {
+      height: 100dvh;
+      touch-action: manipulation;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 flex flex-col justify-between p-3 font-sans overflow-hidden">
+
+  <!-- ヘッダー -->
+  <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+    <div class="flex items-center gap-2">
+      <h1 class="text-base font-bold text-emerald-400">Body Log</h1>
+      <span id="ffmiBadge" class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">--</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1 bg-slate-800 px-2 py-1 rounded text-xs border border-slate-700">
+        <span class="text-slate-400">身長:</span>
+        <input type="number" id="heightInput" step="0.1" class="w-12 bg-transparent text-right text-emerald-400 font-bold focus:outline-none" placeholder="170" value="170">
+        <span class="text-slate-400">cm</span>
+      </div>
+      <button id="clearBtn" class="text-xs text-slate-500 hover:text-rose-400">リセット</button>
+    </div>
+  </div>
+
+  <!-- ステータスカード -->
+  <div class="grid grid-cols-4 gap-2 my-2">
+    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
+      <div class="text-[10px] text-slate-400">体重</div>
+      <div id="latestWeight" class="text-sm font-bold text-emerald-400 mt-0.5">-- <span class="text-[9px] text-slate-400 font-normal">kg</span></div>
+    </div>
+    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
+      <div class="text-[10px] text-slate-400">体脂肪率</div>
+      <div id="latestFat" class="text-sm font-bold text-cyan-400 mt-0.5">-- <span class="text-[9px] text-slate-400 font-normal">%</span></div>
+    </div>
+    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
+      <div class="text-[10px] text-slate-400">除脂肪体重</div>
+      <div id="latestLBM" class="text-sm font-bold text-slate-200 mt-0.5">-- <span class="text-[9px] text-slate-400 font-normal">kg</span></div>
+    </div>
+    <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
+      <div class="text-[10px] text-slate-400">FFMI</div>
+      <div id="latestFFMI" class="text-sm font-bold text-amber-400 mt-0.5">--</div>
+    </div>
+  </div>
+
+  <!-- グラフ領域 -->
+  <div class="flex-1 bg-slate-800/50 p-2 rounded-xl border border-slate-700/50 flex flex-col min-h-0 my-1">
+    <div class="flex justify-between items-center mb-1">
+      <span class="text-[11px] font-medium text-slate-400">推移グラフ</span>
+      <div class="flex gap-1 text-[10px]">
+        <button onclick="setChartFilter('all')" id="btn-all" class="px-2 py-0.5 rounded bg-slate-700 text-slate-200">すべて</button>
+        <button onclick="setChartFilter('weight')" id="btn-weight" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">体重</button>
+        <button onclick="setChartFilter('fat')" id="btn-fat" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">体脂肪</button>
+        <button onclick="setChartFilter('ffmi')" id="btn-ffmi" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">FFMI</button>
+      </div>
+    </div>
+    <div class="flex-1 relative w-full h-full min-h-0">
+      <canvas id="bodyChart"></canvas>
+    </div>
+  </div>
+
+  <!-- 入力フォーム＆アクション -->
+  <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 mt-1">
+    <form id="logForm" class="flex gap-2 items-center mb-2">
+      <div class="flex-1">
+        <label class="text-[10px] text-slate-400 block mb-0.5">日付</label>
+        <input type="date" id="dateInput" required class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 text-center focus:outline-none focus:border-emerald-500">
+      </div>
+      <div class="flex-1">
+        <label class="text-[10px] text-slate-400 block mb-0.5">体重 (kg)</label>
+        <input type="number" id="weightInput" step="0.1" min="20" max="200" required placeholder="65.0" class="w-full bg-slate-900 border border-slate-700 text-emerald-400 font-bold text-xs rounded px-2 py-1.5 text-center focus:outline-none focus:border-emerald-500">
+      </div>
+      <div class="flex-1">
+        <label class="text-[10px] text-slate-400 block mb-0.5">体脂肪率 (%)</label>
+        <input type="number" id="fatInput" step="0.1" min="3" max="60" required placeholder="15.0" class="w-full bg-slate-900 border border-slate-700 text-cyan-400 font-bold text-xs rounded px-2 py-1.5 text-center focus:outline-none focus:border-cyan-500">
+      </div>
+      <div class="flex-none pt-4">
+        <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-3 py-1.5 rounded transition shadow-lg shadow-emerald-500/20">記録</button>
+      </div>
+    </form>
+
+    <div class="flex justify-between items-center pt-2 border-t border-slate-700/60 text-[10px]">
+      <span class="text-slate-500">※自動計算: FFMI / 除脂肪体重</span>
+      <button id="exportCsvBtn" class="flex items-center gap-1 bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded transition">
+        <span>CSV出力</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // State & Storage Initialization
+    let logs = JSON.parse(localStorage.getItem('body_logs') || '[]');
+    let height = parseFloat(localStorage.getItem('user_height') || '170');
+    let chartFilter = 'all';
+    let chartInstance = null;
+
+    // Elements
+    const heightInput = document.getElementById('heightInput');
+    const dateInput = document.getElementById('dateInput');
+    const weightInput = document.getElementById('weightInput');
+    const fatInput = document.getElementById('fatInput');
+    const logForm = document.getElementById('logForm');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    // Default Date to Today
+    dateInput.value = new Date().toISOString().split('T')[0];
+    heightInput.value = height;
+
+    // FFMI Calculation Formula
+    // FFMI = LBM(kg) / (Height(m)^2)
+    // Normalized FFMI = FFMI + 6.1 * (1.8 - Height(m))
+    function calculateMetrics(w, f, h) {
+      const lbm = w * (1 - f / 100);
+      const heightM = h / 100;
+      const rawFFMI = lbm / (heightM * heightM);
+      const normalizedFFMI = rawFFMI + 6.1 * (1.8 - heightM);
+      return {
+        lbm: parseFloat(lbm.toFixed(1)),
+        ffmi: parseFloat(normalizedFFMI.toFixed(1))
+      };
+    }
+
+    function getFFMILabel(ffmi) {
+      if (ffmi < 18) return '標準未満';
+      if (ffmi < 20) return '標準';
+      if (ffmi < 22) return '好体格';
+      if (ffmi < 25) return 'マッチョ';
+      return 'アスリート/極高';
+    }
+
+    // Height Update Event
+    heightInput.addEventListener('change', (e) => {
+      const val = parseFloat(e.target.value);
+      if (val > 50 && val < 250) {
+        height = val;
+        localStorage.setItem('user_height', height.toString());
+        recalculateAllLogs();
+        updateUI();
+      }
+    });
+
+    function recalculateAllLogs() {
+      logs = logs.map(item => {
+        const metrics = calculateMetrics(item.weight, item.fat, height);
+        return { ...item, lbm: metrics.lbm, ffmi: metrics.ffmi };
+      });
+      localStorage.setItem('body_logs', JSON.stringify(logs));
+    }
+
+    // Form Submit Event
+    logForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const date = dateInput.value;
+      const weight = parseFloat(weightInput.value);
+      const fat = parseFloat(fatInput.value);
+
+      if (!date || isNaN(weight) || isNaN(fat)) return;
+
+      const metrics = calculateMetrics(weight, fat, height);
+      const existingIdx = logs.findIndex(l => l.date === date);
+      
+      const newEntry = { date, weight, fat, lbm: metrics.lbm, ffmi: metrics.ffmi };
+
+      if (existingIdx >= 0) {
+        logs[existingIdx] = newEntry;
+      } else {
+        logs.push(newEntry);
+      }
+
+      // Sort by date ascending
+      logs.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      localStorage.setItem('body_logs', JSON.stringify(logs));
+      
+      // Clear Inputs
+      weightInput.value = '';
+      fatInput.value = '';
+
+      updateUI();
+    });
+
+    // Reset Data Event
+    clearBtn.addEventListener('click', () => {
+      if (confirm('すべての記録データを消去しますか？')) {
+        logs = [];
+        localStorage.removeItem('body_logs');
+        updateUI();
+      }
+    });
+
+    // Filter Buttons Update
+    window.setChartFilter = function(filter) {
+      chartFilter = filter;
+      ['all', 'weight', 'fat', 'ffmi'].forEach(f => {
+        const btn = document.getElementById(`btn-${f}`);
+        if (f === filter) {
+          btn.className = 'px-2 py-0.5 rounded bg-slate-700 text-slate-200 font-bold';
+        } else {
+          btn.className = 'px-2 py-0.5 rounded bg-slate-800 text-slate-400';
+        }
+      });
+      renderChart();
+    };
+
+    // Update Top Display & Stats
+    function updateUI() {
+      if (logs.length > 0) {
+        const latest = logs[logs.length - 1];
+        document.getElementById('latestWeight').innerHTML = `${latest.weight} <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestFat').innerHTML = `${latest.fat} <span class="text-[9px] text-slate-400 font-normal">%</span>`;
+        document.getElementById('latestLBM').innerHTML = `${latest.lbm} <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestFFMI').innerText = latest.ffmi;
+
+        const badge = document.getElementById('ffmiBadge');
+        badge.innerText = getFFMILabel(latest.ffmi);
+      } else {
+        document.getElementById('latestWeight').innerHTML = `-- <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestFat').innerHTML = `-- <span class="text-[9px] text-slate-400 font-normal">%</span>`;
+        document.getElementById('latestLBM').innerHTML = `-- <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestFFMI').innerText = '--';
+        document.getElementById('ffmiBadge').innerText = '--';
+      }
+      renderChart();
+    }
+
+    // Chart Renderer
+    function renderChart() {
+      const ctx = document.getElementById('bodyChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
+      const labels = logs.map(l => l.date.slice(5)); // MM-DD
+      const datasets = [];
+
+      if (chartFilter === 'all' || chartFilter === 'weight') {
+        datasets.push({
+          label: '体重 (kg)',
+          data: logs.map(l => l.weight),
+          borderColor: '#10b981',
+          backgroundColor: '#10b98120',
+          yAxisID: 'yWeight',
+          borderWidth: 2,
+          pointRadius: 3,
+          tension: 0.2
+        });
+      }
+
+      if (chartFilter === 'all' || chartFilter === 'fat') {
+        datasets.push({
+          label: '体脂肪率 (%)',
+          data: logs.map(l => l.fat),
+          borderColor: '#06b6d4',
+          backgroundColor: '#06b6d420',
+          yAxisID: 'yFat',
+          borderWidth: 2,
+          pointRadius: 3,
+          tension: 0.2
+        });
+      }
+
+      if (chartFilter === 'all' || chartFilter === 'ffmi') {
+        datasets.push({
+          label: 'FFMI',
+          data: logs.map(l => l.ffmi),
+          borderColor: '#f59e0b',
+          backgroundColor: '#f59e0b20',
+          yAxisID: 'yFFMI',
+          borderWidth: 2,
+          pointRadius: 3,
+          tension: 0.2
+        });
+      }
+
+      const scales = {
+        x: {
+          ticks: { color: '#94a3b8', font: { size: 9 } },
+          grid: { color: '#33415540' }
+        }
+      };
+
+      if (chartFilter === 'all' || chartFilter === 'weight') {
+        scales.yWeight = {
+          type: 'linear',
+          position: 'left',
+          ticks: { color: '#10b981', font: { size: 9 } },
+          grid: { color: '#33415540' }
+        };
+      }
+
+      if (chartFilter === 'all' || chartFilter === 'fat') {
+        scales.yFat = {
+          type: 'linear',
+          position: 'right',
+          ticks: { color: '#06b6d4', font: { size: 9 } },
+          grid: { drawOnChartArea: false }
+        };
+      }
+
+      if (chartFilter === 'ffmi' || (chartFilter === 'all' && !scales.yFat)) {
+        scales.yFFMI = {
+          type: 'linear',
+          position: 'right',
+          ticks: { color: '#f59e0b', font: { size: 9 } },
+          grid: { drawOnChartArea: false }
+        };
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 12 }
+            }
+          },
+          scales: scales
+        }
+      });
+    }
+
+    // Export CSV (BOM付き UTF-8 でExcelの文字化け防止)
+    exportCsvBtn.addEventListener('click', () => {
+      if (logs.length === 0) {
+        alert('出力できるデータがありません');
+        return;
+      }
+
+      let csvContent = '\uFEFF日付,体重(kg),体脂肪率(%),除脂肪体重(kg),FFMI\n';
+      logs.forEach(l => {
+        csvContent += `${l.date},${l.weight},${l.fat},${l.lbm},${l.ffmi}\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `body_log_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // 初期化ロード
+    updateUI();
+  </script>
+</body>
+</html>
