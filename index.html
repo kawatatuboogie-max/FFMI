@@ -33,35 +33,61 @@
     </div>
   </div>
 
-  <!-- ステータスカード -->
-  <div class="grid grid-cols-4 gap-2 my-2">
+  <!-- ステータスカード（今日） -->
+  <div class="grid grid-cols-4 gap-2 my-1.5">
     <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
-      <div class="text-[10px] text-slate-400">体重</div>
-      <div id="latestWeight" class="text-base font-bold text-emerald-400 mt-0.5">-- <span class="text-[10px] text-slate-400 font-normal">kg</span></div>
+      <div class="text-[10px] text-slate-400">体重 (今日)</div>
+      <div id="latestWeight" class="text-sm font-bold text-emerald-400 mt-0.5">-- <span class="text-[9px] text-slate-400 font-normal">kg</span></div>
     </div>
     <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">体脂肪率</div>
-      <div id="latestFat" class="text-base font-bold text-cyan-400 mt-0.5">-- <span class="text-[10px] text-slate-400 font-normal">%</span></div>
+      <div id="latestFat" class="text-sm font-bold text-cyan-400 mt-0.5">-- <span class="text-[9px] text-slate-400 font-normal">%</span></div>
     </div>
     <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">除脂肪体重</div>
-      <div id="latestLBM" class="text-base font-bold text-slate-200 mt-0.5">-- <span class="text-[10px] text-slate-400 font-normal">kg</span></div>
+      <div id="latestLBM" class="text-sm font-bold text-slate-200 mt-0.5">-- <span class="text-[9px] text-slate-400 font-normal">kg</span></div>
     </div>
     <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">FFMI</div>
-      <div id="latestFFMI" class="text-base font-bold text-amber-400 mt-0.5">--</div>
+      <div id="latestFFMI" class="text-sm font-bold text-amber-400 mt-0.5">--</div>
     </div>
   </div>
 
-  <!-- グラフ領域（高さを1.5倍の210pxに拡大） -->
-  <div class="bg-slate-800/50 p-2 rounded-xl border border-slate-700/50 flex flex-col my-1" style="height: 210px;">
+  <!-- 直近1週間の平均値カード -->
+  <div class="bg-slate-800/40 p-2 rounded-lg border border-slate-700/40 my-1">
+    <div class="text-[10px] text-slate-400 mb-1 flex justify-between items-center">
+      <span>直近7日間の平均</span>
+      <span id="avgCount" class="text-[9px] text-slate-500">データ数: 0件</span>
+    </div>
+    <div class="grid grid-cols-4 gap-2 text-center">
+      <div>
+        <div id="avgWeight" class="text-xs font-bold text-emerald-300">-- <span class="text-[8px] font-normal text-slate-400">kg</span></div>
+      </div>
+      <div>
+        <div id="avgFat" class="text-xs font-bold text-cyan-300">-- <span class="text-[8px] font-normal text-slate-400">%</span></div>
+      </div>
+      <div>
+        <div id="avgLBM" class="text-xs font-bold text-slate-300">-- <span class="text-[8px] font-normal text-slate-400">kg</span></div>
+      </div>
+      <div>
+        <div id="avgFFMI" class="text-xs font-bold text-amber-300">--</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- グラフ領域（日別・週平均・月平均 切替付き） -->
+  <div class="bg-slate-800/50 p-2 rounded-xl border border-slate-700/50 flex flex-col my-1" style="height: 180px;">
     <div class="flex justify-between items-center mb-1">
-      <span class="text-[11px] font-medium text-slate-400">推移グラフ</span>
       <div class="flex gap-1 text-[10px]">
-        <button onclick="setChartFilter('all')" id="btn-all" class="px-2 py-0.5 rounded bg-slate-700 text-slate-200">すべて</button>
-        <button onclick="setChartFilter('weight')" id="btn-weight" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">体重</button>
-        <button onclick="setChartFilter('fat')" id="btn-fat" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">体脂肪</button>
-        <button onclick="setChartFilter('ffmi')" id="btn-ffmi" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">FFMI</button>
+        <button onclick="setRangeMode('daily')" id="btn-daily" class="px-2 py-0.5 rounded bg-slate-700 text-slate-200 font-bold">日別</button>
+        <button onclick="setRangeMode('weekly')" id="btn-weekly" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">週平均</button>
+        <button onclick="setRangeMode('monthly')" id="btn-monthly" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">月平均</button>
+      </div>
+      <div class="flex gap-1 text-[10px]">
+        <button onclick="setChartFilter('all')" id="filter-all" class="px-1.5 py-0.5 rounded bg-slate-700 text-slate-200">全</button>
+        <button onclick="setChartFilter('weight')" id="filter-weight" class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">体重</button>
+        <button onclick="setChartFilter('fat')" id="filter-fat" class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">脂肪</button>
+        <button onclick="setChartFilter('ffmi')" id="filter-ffmi" class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">FFMI</button>
       </div>
     </div>
     <div class="flex-1 relative w-full h-full min-h-0">
@@ -71,7 +97,7 @@
 
   <!-- 入力フォーム＆アクション -->
   <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 mt-1">
-    <form id="logForm" class="flex gap-2 items-center mb-2">
+    <form id="logForm" class="flex gap-2 items-center mb-1.5">
       <div class="flex-1">
         <label class="text-[10px] text-slate-400 block mb-0.5">日付</label>
         <input type="date" id="dateInput" required class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 text-center focus:outline-none focus:border-emerald-500">
@@ -90,7 +116,7 @@
     </form>
 
     <div class="flex justify-between items-center pt-1.5 border-t border-slate-700/60 text-[10px]">
-      <span class="text-slate-500">※自動計算: FFMI / 除脂肪体重</span>
+      <span class="text-slate-500">自動計算: FFMI / 除脂肪体重</span>
       <button id="exportCsvBtn" class="flex items-center gap-1 bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded transition">
         <span>CSV出力</span>
       </button>
@@ -101,6 +127,7 @@
     let logs = JSON.parse(localStorage.getItem('body_logs') || '[]');
     let height = parseFloat(localStorage.getItem('user_height') || '170');
     let chartFilter = 'all';
+    let rangeMode = 'daily'; // 'daily' | 'weekly' | 'monthly'
     let chartInstance = null;
 
     const heightInput = document.getElementById('heightInput');
@@ -161,7 +188,6 @@
 
       const metrics = calculateMetrics(weight, fat, height);
       const existingIdx = logs.findIndex(l => l.date === date);
-      
       const newEntry = { date, weight, fat, lbm: metrics.lbm, ffmi: metrics.ffmi };
 
       if (existingIdx >= 0) {
@@ -175,7 +201,6 @@
       
       weightInput.value = '';
       fatInput.value = '';
-
       updateUI();
     });
 
@@ -187,11 +212,11 @@
       }
     });
 
-    window.setChartFilter = function(filter) {
-      chartFilter = filter;
-      ['all', 'weight', 'fat', 'ffmi'].forEach(f => {
-        const btn = document.getElementById(`btn-${f}`);
-        if (f === filter) {
+    window.setRangeMode = function(mode) {
+      rangeMode = mode;
+      ['daily', 'weekly', 'monthly'].forEach(m => {
+        const btn = document.getElementById(`btn-${m}`);
+        if (m === mode) {
           btn.className = 'px-2 py-0.5 rounded bg-slate-700 text-slate-200 font-bold';
         } else {
           btn.className = 'px-2 py-0.5 rounded bg-slate-800 text-slate-400';
@@ -200,23 +225,102 @@
       renderChart();
     };
 
+    window.setChartFilter = function(filter) {
+      chartFilter = filter;
+      ['all', 'weight', 'fat', 'ffmi'].forEach(f => {
+        const btn = document.getElementById(`filter-${f}`);
+        if (f === filter) {
+          btn.className = 'px-1.5 py-0.5 rounded bg-slate-700 text-slate-200 font-bold';
+        } else {
+          btn.className = 'px-1.5 py-0.5 rounded bg-slate-800 text-slate-400';
+        }
+      });
+      renderChart();
+    };
+
+    // 週・月のグループ化集計ロジック
+    function getAggregatedData() {
+      if (rangeMode === 'daily') {
+        return logs.map(l => ({ label: l.date.slice(5), weight: l.weight, fat: l.fat, ffmi: l.ffmi }));
+      }
+
+      const groups = {};
+      logs.forEach(l => {
+        const d = new Date(l.date);
+        let key = '';
+        if (rangeMode === 'weekly') {
+          // 週の開始日（月曜日基準など簡易的に年-W週）
+          const year = d.getFullYear();
+          const firstDay = new Date(year, 0, 1);
+          const weekNum = Math.ceil(((d - firstDay) / 86400000 + firstDay.getDay() + 1) / 7);
+          key = `${year}-W${String(weekNum).padStart(2, '0')}`;
+        } else {
+          // 月別 (YYYY-MM)
+          key = l.date.slice(0, 7);
+        }
+
+        if (!groups[key]) {
+          groups[key] = { weight: 0, fat: 0, ffmi: 0, count: 0 };
+        }
+        groups[key].weight += l.weight;
+        groups[key].fat += l.fat;
+        groups[key].ffmi += l.ffmi;
+        groups[key].count += 1;
+      });
+
+      return Object.keys(groups).sort().map(key => {
+        const g = groups[key];
+        return {
+          label: rangeMode === 'weekly' ? key.replace('-W', 'W') : key.slice(5) + '月',
+          weight: parseFloat((g.weight / g.count).toFixed(1)),
+          fat: parseFloat((g.fat / g.count).toFixed(1)),
+          ffmi: parseFloat((g.ffmi / g.count).toFixed(1))
+        };
+      });
+    }
+
     function updateUI() {
+      // 1. 本日の最新ステータス
       if (logs.length > 0) {
         const latest = logs[logs.length - 1];
-        document.getElementById('latestWeight').innerHTML = `${latest.weight} <span class="text-[10px] text-slate-400 font-normal">kg</span>`;
-        document.getElementById('latestFat').innerHTML = `${latest.fat} <span class="text-[10px] text-slate-400 font-normal">%</span>`;
-        document.getElementById('latestLBM').innerHTML = `${latest.lbm} <span class="text-[10px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestWeight').innerHTML = `${latest.weight} <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestFat').innerHTML = `${latest.fat} <span class="text-[9px] text-slate-400 font-normal">%</span>`;
+        document.getElementById('latestLBM').innerHTML = `${latest.lbm} <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
         document.getElementById('latestFFMI').innerText = latest.ffmi;
-
-        const badge = document.getElementById('ffmiBadge');
-        badge.innerText = getFFMILabel(latest.ffmi);
+        document.getElementById('ffmiBadge').innerText = getFFMILabel(latest.ffmi);
       } else {
-        document.getElementById('latestWeight').innerHTML = `-- <span class="text-[10px] text-slate-400 font-normal">kg</span>`;
-        document.getElementById('latestFat').innerHTML = `-- <span class="text-[10px] text-slate-400 font-normal">%</span>`;
-        document.getElementById('latestLBM').innerHTML = `-- <span class="text-[10px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestWeight').innerHTML = `-- <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
+        document.getElementById('latestFat').innerHTML = `-- <span class="text-[9px] text-slate-400 font-normal">%</span>`;
+        document.getElementById('latestLBM').innerHTML = `-- <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
         document.getElementById('latestFFMI').innerText = '--';
         document.getElementById('ffmiBadge').innerText = '--';
       }
+
+      // 2. 直近7日間の平均値計算
+      if (logs.length > 0) {
+        const recentLogs = logs.slice(-7);
+        const count = recentLogs.length;
+        const sum = recentLogs.reduce((acc, cur) => {
+          acc.weight += cur.weight;
+          acc.fat += cur.fat;
+          acc.lbm += cur.lbm;
+          acc.ffmi += cur.ffmi;
+          return acc;
+        }, { weight: 0, fat: 0, lbm: 0, ffmi: 0 });
+
+        document.getElementById('avgCount').innerText = `データ数: ${count}件`;
+        document.getElementById('avgWeight').innerHTML = `${(sum.weight / count).toFixed(1)} <span class="text-[8px] font-normal text-slate-400">kg</span>`;
+        document.getElementById('avgFat').innerHTML = `${(sum.fat / count).toFixed(1)} <span class="text-[8px] font-normal text-slate-400">%</span>`;
+        document.getElementById('avgLBM').innerHTML = `${(sum.lbm / count).toFixed(1)} <span class="text-[8px] font-normal text-slate-400">kg</span>`;
+        document.getElementById('avgFFMI').innerText = (sum.ffmi / count).toFixed(1);
+      } else {
+        document.getElementById('avgCount').innerText = `データ数: 0件`;
+        document.getElementById('avgWeight').innerHTML = `-- <span class="text-[8px] font-normal text-slate-400">kg</span>`;
+        document.getElementById('avgFat').innerHTML = `-- <span class="text-[8px] font-normal text-slate-400">%</span>`;
+        document.getElementById('avgLBM').innerHTML = `-- <span class="text-[8px] font-normal text-slate-400">kg</span>`;
+        document.getElementById('avgFFMI').innerText = '--';
+      }
+
       renderChart();
     }
 
@@ -224,13 +328,14 @@
       const ctx = document.getElementById('bodyChart').getContext('2d');
       if (chartInstance) chartInstance.destroy();
 
-      const labels = logs.map(l => l.date.slice(5));
+      const chartData = getAggregatedData();
+      const labels = chartData.map(d => d.label);
       const datasets = [];
 
       if (chartFilter === 'all' || chartFilter === 'weight') {
         datasets.push({
           label: '体重',
-          data: logs.map(l => l.weight),
+          data: chartData.map(d => d.weight),
           borderColor: '#10b981',
           backgroundColor: '#10b98120',
           yAxisID: 'yWeight',
@@ -243,7 +348,7 @@
       if (chartFilter === 'all' || chartFilter === 'fat') {
         datasets.push({
           label: '体脂肪',
-          data: logs.map(l => l.fat),
+          data: chartData.map(d => d.fat),
           borderColor: '#06b6d4',
           backgroundColor: '#06b6d420',
           yAxisID: 'yFat',
@@ -256,7 +361,7 @@
       if (chartFilter === 'all' || chartFilter === 'ffmi') {
         datasets.push({
           label: 'FFMI',
-          data: logs.map(l => l.ffmi),
+          data: chartData.map(d => d.ffmi),
           borderColor: '#f59e0b',
           backgroundColor: '#f59e0b20',
           yAxisID: 'yFFMI',
