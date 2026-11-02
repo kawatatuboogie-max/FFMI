@@ -34,7 +34,7 @@
   </div>
 
   <!-- ステータスカード（今日） -->
-  <div class="grid grid-cols-4 gap-2 my-1.5">
+  <div class="grid grid-cols-4 gap-2 my-1">
     <div class="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 text-center">
       <div class="text-[10px] text-slate-400">体重 (今日)</div>
       <div id="latestWeight" class="text-sm font-bold text-emerald-400 mt-0.5">-- <span class="text-[9px] text-slate-400 font-normal">kg</span></div>
@@ -53,7 +53,7 @@
     </div>
   </div>
 
-  <!-- 直近1週間の平均値カード -->
+  <!-- 直近1週間の平均値カード（文字サイズを今日と同じ text-sm に統一） -->
   <div class="bg-slate-800/40 p-2 rounded-lg border border-slate-700/40 my-1">
     <div class="text-[10px] text-slate-400 mb-1 flex justify-between items-center">
       <span>直近7日間の平均</span>
@@ -61,22 +61,22 @@
     </div>
     <div class="grid grid-cols-4 gap-2 text-center">
       <div>
-        <div id="avgWeight" class="text-xs font-bold text-emerald-300">-- <span class="text-[8px] font-normal text-slate-400">kg</span></div>
+        <div id="avgWeight" class="text-sm font-bold text-emerald-300">-- <span class="text-[9px] font-normal text-slate-400">kg</span></div>
       </div>
       <div>
-        <div id="avgFat" class="text-xs font-bold text-cyan-300">-- <span class="text-[8px] font-normal text-slate-400">%</span></div>
+        <div id="avgFat" class="text-sm font-bold text-cyan-300">-- <span class="text-[9px] font-normal text-slate-400">%</span></div>
       </div>
       <div>
-        <div id="avgLBM" class="text-xs font-bold text-slate-300">-- <span class="text-[8px] font-normal text-slate-400">kg</span></div>
+        <div id="avgLBM" class="text-sm font-bold text-slate-300">-- <span class="text-[9px] font-normal text-slate-400">kg</span></div>
       </div>
       <div>
-        <div id="avgFFMI" class="text-xs font-bold text-amber-300">--</div>
+        <div id="avgFFMI" class="text-sm font-bold text-amber-300">--</div>
       </div>
     </div>
   </div>
 
-  <!-- グラフ領域（日別・週平均・月平均 切替付き） -->
-  <div class="bg-slate-800/50 p-2 rounded-xl border border-slate-700/50 flex flex-col my-1" style="height: 180px;">
+  <!-- グラフ領域 -->
+  <div class="bg-slate-800/50 p-2 rounded-xl border border-slate-700/50 flex flex-col my-1" style="height: 170px;">
     <div class="flex justify-between items-center mb-1">
       <div class="flex gap-1 text-[10px]">
         <button onclick="setRangeMode('daily')" id="btn-daily" class="px-2 py-0.5 rounded bg-slate-700 text-slate-200 font-bold">日別</button>
@@ -127,7 +127,7 @@
     let logs = JSON.parse(localStorage.getItem('body_logs') || '[]');
     let height = parseFloat(localStorage.getItem('user_height') || '170');
     let chartFilter = 'all';
-    let rangeMode = 'daily'; // 'daily' | 'weekly' | 'monthly'
+    let rangeMode = 'daily';
     let chartInstance = null;
 
     const heightInput = document.getElementById('heightInput');
@@ -238,7 +238,6 @@
       renderChart();
     };
 
-    // 週・月のグループ化集計ロジック
     function getAggregatedData() {
       if (rangeMode === 'daily') {
         return logs.map(l => ({ label: l.date.slice(5), weight: l.weight, fat: l.fat, ffmi: l.ffmi }));
@@ -249,13 +248,11 @@
         const d = new Date(l.date);
         let key = '';
         if (rangeMode === 'weekly') {
-          // 週の開始日（月曜日基準など簡易的に年-W週）
           const year = d.getFullYear();
           const firstDay = new Date(year, 0, 1);
           const weekNum = Math.ceil(((d - firstDay) / 86400000 + firstDay.getDay() + 1) / 7);
           key = `${year}-W${String(weekNum).padStart(2, '0')}`;
         } else {
-          // 月別 (YYYY-MM)
           key = l.date.slice(0, 7);
         }
 
@@ -280,7 +277,6 @@
     }
 
     function updateUI() {
-      // 1. 本日の最新ステータス
       if (logs.length > 0) {
         const latest = logs[logs.length - 1];
         document.getElementById('latestWeight').innerHTML = `${latest.weight} <span class="text-[9px] text-slate-400 font-normal">kg</span>`;
@@ -296,7 +292,6 @@
         document.getElementById('ffmiBadge').innerText = '--';
       }
 
-      // 2. 直近7日間の平均値計算
       if (logs.length > 0) {
         const recentLogs = logs.slice(-7);
         const count = recentLogs.length;
@@ -309,15 +304,15 @@
         }, { weight: 0, fat: 0, lbm: 0, ffmi: 0 });
 
         document.getElementById('avgCount').innerText = `データ数: ${count}件`;
-        document.getElementById('avgWeight').innerHTML = `${(sum.weight / count).toFixed(1)} <span class="text-[8px] font-normal text-slate-400">kg</span>`;
-        document.getElementById('avgFat').innerHTML = `${(sum.fat / count).toFixed(1)} <span class="text-[8px] font-normal text-slate-400">%</span>`;
-        document.getElementById('avgLBM').innerHTML = `${(sum.lbm / count).toFixed(1)} <span class="text-[8px] font-normal text-slate-400">kg</span>`;
+        document.getElementById('avgWeight').innerHTML = `${(sum.weight / count).toFixed(1)} <span class="text-[9px] font-normal text-slate-400">kg</span>`;
+        document.getElementById('avgFat').innerHTML = `${(sum.fat / count).toFixed(1)} <span class="text-[9px] font-normal text-slate-400">%</span>`;
+        document.getElementById('avgLBM').innerHTML = `${(sum.lbm / count).toFixed(1)} <span class="text-[9px] font-normal text-slate-400">kg</span>`;
         document.getElementById('avgFFMI').innerText = (sum.ffmi / count).toFixed(1);
       } else {
         document.getElementById('avgCount').innerText = `データ数: 0件`;
-        document.getElementById('avgWeight').innerHTML = `-- <span class="text-[8px] font-normal text-slate-400">kg</span>`;
-        document.getElementById('avgFat').innerHTML = `-- <span class="text-[8px] font-normal text-slate-400">%</span>`;
-        document.getElementById('avgLBM').innerHTML = `-- <span class="text-[8px] font-normal text-slate-400">kg</span>`;
+        document.getElementById('avgWeight').innerHTML = `-- <span class="text-[9px] font-normal text-slate-400">kg</span>`;
+        document.getElementById('avgFat').innerHTML = `-- <span class="text-[9px] font-normal text-slate-400">%</span>`;
+        document.getElementById('avgLBM').innerHTML = `-- <span class="text-[9px] font-normal text-slate-400">kg</span>`;
         document.getElementById('avgFFMI').innerText = '--';
       }
 
